@@ -1,10 +1,13 @@
 import './App.css';
-
+import { ChakraProvider } from '@chakra-ui/react'
+import AllPages from './Pages/AllPages';
+import Navbar from './Components/Navbar';
 function App() {
   return (
-    <div className="App">
-    
-    </div>
+    <ChakraProvider>
+      <Navbar />
+      <AllPages />
+    </ChakraProvider>
   );
 }
 

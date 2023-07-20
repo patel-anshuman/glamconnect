@@ -89,8 +89,8 @@ const ProfessionalCard = ({ professional, onBook }) => {
 
   return (
     <Box borderWidth="1px" borderRadius="10px" p={4} maxW="sm">
-      <Box height="200px">
-        <Image src={imageSrc} borderRadius="10px" alt={name} objectFit="cover" height="100%" />
+      <Box>
+        <Image src="../images/female-hairdresser-making-hairstyle-redhead-woman-beauty-salon.jpg" borderRadius="10px" alt={name} objectFit="cover"/>
       </Box>
       <Text mt={2} fontWeight="bold" fontSize="lg">
         {name}
@@ -108,7 +108,7 @@ const ProfessionalCard = ({ professional, onBook }) => {
           </Badge>
         ))}
       </Box>
-      <Text mt={2} fontSize="sm">
+      <Text noOfLines={1} mt={2} fontSize="sm">
         {moreInfo}
       </Text>
       <Button mt={4} onClick={handleOpenModal} colorScheme="purple" size="sm">

@@ -6,6 +6,7 @@ import BeautyCategoriesPage from './Categories'
 import ProfessionalsPage from './Professionals'
 import Signup from './Signup'
 import Login from './Login'
+
 const AllPages = () => {
   return (
     <Routes>
@@ -14,6 +15,7 @@ const AllPages = () => {
         <Route path='/login' element={<Login/>}/>
         <Route path='/services' element={<Services/>}/>
         <Route path='/categories' element={<BeautyCategoriesPage/>}/>
+        <Route path="/login" element={<Signup/>}/>
         <Route path='/categories/professionals' element={<ProfessionalsPage/>}/>
 
         <Route path='*' element={<h1>Page Not Found</h1>}/>

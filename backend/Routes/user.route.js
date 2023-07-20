@@ -11,6 +11,8 @@ const app = express()
 const jwt = require('jsonwebtoken')
 
 
+
+
 const sendVerificationMail = async (name, email, userId) => {
   try {
     const transporter = nodemailer.createTransport({
@@ -212,7 +214,7 @@ userrouter.post("/change-password", async (req, res) => {
         { $set: { password: newPassword, token: "" } },
         { new: true }
       );
-
+anshita
       res.status(200).send({ success: true, msg: "Password changed successfully" });
     } else {
       res.status(400).send({ success: false, msg: "This link expired" });

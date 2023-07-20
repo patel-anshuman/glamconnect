@@ -7,7 +7,7 @@ const userSchema = mongoose.Schema({
     isVerified: { type: Boolean, default: false },
     // isAdmin:{type:Boolean, default:true},
     role: { type: String, default: "user", enum: ["admin", "user"] },
-    token: { type: String, default: "" }
+    appointments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Appointment' }],
 }
 
 )

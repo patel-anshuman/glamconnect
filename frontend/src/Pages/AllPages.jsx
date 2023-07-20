@@ -4,12 +4,14 @@ import Home from "./Home"
 import Services from "./Services"
 import BeautyCategoriesPage from './Categories'
 import ProfessionalsPage from './Professionals'
+import Signup from './Signup'
 const AllPages = () => {
   return (
     <Routes>
         <Route path='/' element={<Home/>}/>
         <Route path='/services' element={<Services/>}/>
         <Route path='/categories' element={<BeautyCategoriesPage/>}/>
+        <Route path="/login" element={<Signup/>}/>
         <Route path='/categories/professionals' element={<ProfessionalsPage/>}/>
 
         <Route path='*' element={<h1>Page Not Found</h1>}/>

@@ -34,6 +34,7 @@ userrouter.post("/register", async (req, res) => {
       console.log(err)
   }
 })
+
 userrouter.get("/data", async (req, res) => {
   try {
       const users = await UserModel.find()

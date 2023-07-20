@@ -159,26 +159,6 @@ const updatePassword = async (password) => {
 
 
 
-userrouter.get("/logout", async (req, res) => {
-  try {
-    const token = req.headers?.authorization;
-    if (!token) return res.status(403);
-    let blackListedToken = new BlackListModel({ token });
-    await blackListedToken.save();
-    res.send({ msg: "logout succesfull" });
-  } catch (error) {
-    res.send(error.message);
-  }
-});
-
-
-
-userrouter.delete("/delete/:id", async (req, res) => {
-  const { id } = req.params
-  const deleteUsers = await UserModel.findByIdAndDelete({ _id: id })
-  return res.status(200).send({ msg: "User Deleted" })
-})
-
 
 userrouter.get("/reset-password", async (req, res) => {
   try {

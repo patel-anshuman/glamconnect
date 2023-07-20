@@ -103,7 +103,6 @@ userrouter.post("/register", async (req, res) => {
 
 })
 
-
 userrouter.get("/data", async (req, res) => {
   try {
     const users = await UserModel.find()

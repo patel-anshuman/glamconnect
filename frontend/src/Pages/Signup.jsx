@@ -113,7 +113,7 @@ const Signup = () => {
             isClosable: true,
           });
 
-          // Navigate to home page
+          // Navigate to login page
           navigate('/login');
         } else {
           // Signup failed

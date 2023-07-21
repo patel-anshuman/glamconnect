@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useToast } from '@chakra-ui/react';
-
+import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 import {
   FormControl,
   FormLabel,
@@ -12,7 +13,6 @@ import {
   Divider,
   Link,
 } from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -43,9 +43,6 @@ const Login = () => {
     if (isValid) {
       try {
         // Perform login logic here
-        // You can make an API call to a server or handle the login process as per your requirements
-        // After successful login, you can navigate to another page
-
         // Replace the following code with your login logic
         const response = await fetch('/api/login', {
           method: 'POST',
@@ -60,6 +57,11 @@ const Login = () => {
 
         if (response.ok) {
           // Login successful
+          const data = await response.json();
+
+          // Save the token in cookies
+          Cookies.set('token', data.token, { expires: 7 }); // Set the cookie to expire in 7 days
+
           toast({
             title: 'Login Successful',
             description: 'You have successfully logged in.',

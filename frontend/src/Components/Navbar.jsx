@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { FiLogOut } from "react-icons/fi";
 import { MdAccountCircle } from "react-icons/md";
 import { GrSchedules } from "react-icons/gr";
@@ -8,7 +8,6 @@ import {
   Text,
   IconButton,
   useDisclosure,
-  
   Menu,
   MenuButton,
   MenuList,
@@ -16,15 +15,45 @@ import {
   Button
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon, ChevronDownIcon } from "@chakra-ui/icons";
+import Cookies from "js-cookie";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const { isOpen, onToggle } = useDisclosure();
+  const [user, setUser] = useState(null);
 
-  // Mock user data retrieved from localStorage
-  const user = {
-    name: "John Doe",
-    avatar: "https://example.com/avatar.jpg",
-  };
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        // Check if the token is present in cookies
+        const token = Cookies.get("token");
+        if (token) {
+          const response = await fetch("/api/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (response.ok) {
+            // Fetch user details from the response
+            const userData = await response.json();
+            setUser(userData);
+          } else {
+            // If the response status is not OK, the user token may be invalid or expired
+            // You can handle this scenario as per your requirements
+          }
+        }
+      } catch (error) {
+        // Handle error if any occurred during the API call
+        console.error("Error fetching user details:", error);
+      }
+    };
+
+    // Call the fetchUserDetails function
+    fetchUserDetails();
+  }, []);
 
   return (
     <Flex
@@ -98,18 +127,40 @@ const Navbar = () => {
       </Box>
 
       {/* User Dropdown */}
-      <Box display="flex" alignItems="center" border="md" gap="5px" color="grey.600">
-        <Menu>
-          <MenuButton as={Button} rightIcon={<ChevronDownIcon/>} bg="white">
-            {user.name}
-          </MenuButton>
-          <MenuList>
-            <MenuItem fontWeight="500" borderWidth="1px" display={"flex"} borderTop="none" borderLeft="none" borderRight="none" gap={"10px"}><MdAccountCircle fontSize={"23px"}/>My Account</MenuItem>
-            <MenuItem fontWeight="500" borderWidth="1px" borderTop="none" display={"flex"} borderLeft="none" borderRight="none" gap={"10px"}><GrSchedules fontSize={"23px"}/>Appointments</MenuItem>
-            <MenuItem fontWeight="500" borderWidth="1px" borderTop="none" display={"flex"} borderLeft="none" borderRight="none" borderBottom="none" gap={"10px"}><FiLogOut fontSize={"23px"}/>Logout</MenuItem>
-          </MenuList>
-        </Menu>
-      </Box>
+      {user ? (
+        // If the user is logged in, show the user dropdown
+        <Box display="flex" alignItems="center" border="md" gap="5px" color="grey.600">
+          <Menu>
+            <MenuButton as={Button} rightIcon={<ChevronDownIcon />} bg="white">
+              {user.name}
+            </MenuButton>
+            <MenuList>
+              <MenuItem fontWeight="500" borderWidth="1px" display={"flex"} borderTop="none" borderLeft="none" borderRight="none" gap={"10px"}
+              >
+                <MdAccountCircle fontSize={"23px"} />
+                My Account
+              </MenuItem>
+              <MenuItem fontWeight="500" borderWidth="1px" borderTop="none" display={"flex"} borderLeft="none" borderRight="none" gap={"10px"}
+              >
+                <GrSchedules fontSize={"23px"} />
+                Appointments
+              </MenuItem>
+              <MenuItem fontWeight="500" borderWidth="1px" borderTop="none" display={"flex"} borderLeft="none" borderRight="none" borderBottom="none" gap={"10px"}
+              >
+                <FiLogOut fontSize={"23px"} />
+                Logout
+              </MenuItem>
+            </MenuList>
+          </Menu>
+        </Box>
+      ) : (
+        // If the user is not logged in, show the "Login" link
+        <Link to="/login">
+          <Button colorScheme="white" variant="solid">
+            Login
+          </Button>
+        </Link>
+      )}
     </Flex>
   );
 };

@@ -254,7 +254,6 @@ userrouter.get("/verify", async (req, res) => {
   }
 });
 
-
 userrouter.get("/logout", async (req, res) => {
   try {
     const token = req.headers?.authorization;
@@ -266,8 +265,6 @@ userrouter.get("/logout", async (req, res) => {
     res.send(error.message);
   }
 });
-
-
 
 userrouter.delete("/delete/:id", async (req, res) => {
   const { id } = req.params

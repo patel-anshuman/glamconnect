@@ -6,6 +6,7 @@ const appointmentSchema = new mongoose.Schema({
     phone: { type: String, required: true },
     date: { type: Date, required: true },
     time: { type: String, required: true },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
     message: { type: String },
     professional: { type: mongoose.Schema.Types.ObjectId, ref: 'Professional' },
     service: { type: mongoose.Schema.Types.ObjectId, ref: 'Service' },
@@ -13,5 +14,4 @@ const appointmentSchema = new mongoose.Schema({
 });
 
 const Appointment = mongoose.model('Appointment', appointmentSchema);
-
 module.exports = Appointment;

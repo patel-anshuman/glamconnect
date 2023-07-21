@@ -6,6 +6,7 @@ import BeautyCategoriesPage from './Categories'
 import ProfessionalsPage from './Professionals'
 import Signup from './Signup'
 import Login from './Login'
+import Appointment from './Appointment'
 
 const AllPages = () => {
   return (
@@ -17,7 +18,7 @@ const AllPages = () => {
         <Route path='/categories' element={<BeautyCategoriesPage/>}/>
         <Route path="/login" element={<Signup/>}/>
         <Route path='/categories/professionals' element={<ProfessionalsPage/>}/>
-
+        <Route path='/appointment/:id' element={<Appointment/>}/>
         <Route path='*' element={<h1>Page Not Found</h1>}/>
     </Routes>
   )

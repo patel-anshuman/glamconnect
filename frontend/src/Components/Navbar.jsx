@@ -38,7 +38,7 @@ const Navbar = () => {
     >
       {/* Logo */}
       <Text as="a" href="/" fontWeight="bold" fontSize="2xl" color="white">
-        GlamGuru
+        GlamConnect
       </Text>
 
       {/* Hamburger Menu */}

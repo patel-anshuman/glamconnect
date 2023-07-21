@@ -60,7 +60,7 @@ const Home = () => {
             transform="translate(-50%, -50%)"
             textAlign="center"
           >
-            <Heading as="h1" size="4xl" color="white" marginBottom="20px" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)' }}>
+            <Heading as="h1" size="4xl" color="white" marginBottom="20px" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',  }}>
               GlamConnect
             </Heading>
             <Text color="white" fontSize="2xl" style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.5)' }}>

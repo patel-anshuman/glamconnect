@@ -5,14 +5,13 @@ const UserModel = require('../Model/user.model')
 
 const userrouter = express.Router()
 const bcrypt = require('bcrypt')
-const app = express()
 
 
 const jwt = require('jsonwebtoken')
 
 
 
-
+//---------------------- OAuth GMail -------------------------
 const sendVerificationMail = async (name, email, userId) => {
   try {
     const transporter = nodemailer.createTransport({
@@ -44,6 +43,7 @@ const sendVerificationMail = async (name, email, userId) => {
     console.log(error);
   }
 };
+
 
 const sendResetPassword = async (username, email, token) => {
   try {
@@ -77,22 +77,22 @@ const sendResetPassword = async (username, email, token) => {
   }
 };
 
-
+// User Manual Signup
 userrouter.post("/register", async (req, res) => {
 
   try {
-    const { name, email, password, role } = req.body;
+    const { name, phoneNumber, email, password, role } = req.body;
 
-    const userExist = await UserModel.find({ name, email, password, role });
+    const userExist = await UserModel.find({ name, phoneNumber, email, password, role });
     if (userExist.length !== 0) {
       return res.status(401).send({ msg: "User Already Registered" });
     }
     const hash = await bcrypt.hash(password, 8);
-    const newUser = new UserModel({ name, email, password: hash, role });
+    const newUser = new UserModel({ name, phoneNumber, email, password: hash, role });
 
     const userData = await newUser.save();
     if (userData) {
-      sendVerificationMail(name, email, userData._id);
+      sendVerificationMail(name, phoneNumber, email, userData._id);
       res.status(200).json({ msg: "Registration successful", userData });
     } else {
       res.status(401).json({ msg: "Registration failed" });
@@ -120,11 +120,11 @@ userrouter.post("/login", async (req, res) => {
     const { email, password } = req.body;
     const isUserPresent = await UserModel.findOne({ email });
     if (!isUserPresent) {
-      return res.status(401).send("user not found");
+      return res.status(401).json({ msg: "User not found!"});
     }
     const isPass = await bcrypt.compare(password, isUserPresent.password);
     if (!isPass) {
-      return res.status(401).send({ msg: "invalid credential" });
+      return res.status(401).send({ msg: "Wrong credentials" });
     }
     const token = await jwt.sign(
       {
@@ -134,9 +134,10 @@ userrouter.post("/login", async (req, res) => {
       { expiresIn: "1hr" }
     );
     res.send({
-      msg: "login success",
+      msg: "Login Success",
       token,
-      username: isUserPresent.name,
+      name: isUserPresent.name,
+      email: isUserPresent.email,
       userId: isUserPresent._id,
       isVerified: isUserPresent.isVerified,
       role: isUserPresent.role

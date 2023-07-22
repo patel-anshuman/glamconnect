@@ -26,7 +26,7 @@ import { useParams } from 'react-router-dom';
 import { Icon } from "@chakra-ui/react";
 import { FaInfoCircle } from "react-icons/fa";
 import { FiClock, FiInfo } from "react-icons/fi";
-
+import axios from "axios"
 
 const ProfessionalCard = ({ professional, onBook }) => {
   const { name, imageSrc, description, skillset, moreInfo, services,_id } = professional;
@@ -35,6 +35,7 @@ const ProfessionalCard = ({ professional, onBook }) => {
   const [selectedService, setSelectedService] = useState(null);
   const [currentProfessional, setCurrentProfessional] = useState("");
   const toast = useToast();
+  const loginToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI2NGJiZmE1MjQxNGQ1NGQyNDYxNWU4YTUiLCJyb2xlIjoidXNlciIsImN1cnJlbnRUaW1lIjoxNjkwMDQ1MjA1MTg5LCJpYXQiOjE2OTAwNDUyMDV9.IlalnWlMKZawoYV64UBNh0t8X6k9YRmTCbwH2U0QXdk";
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -42,10 +43,10 @@ const ProfessionalCard = ({ professional, onBook }) => {
     date: '',
     time: '',
     message: '',
-    service: '',
-    professional:_id
+    serviceId: '',
+    professionalId:_id
   });
-
+  
   const handleOpenModal = () => {
     setIsOpen(true);
   };
@@ -68,12 +69,12 @@ const ProfessionalCard = ({ professional, onBook }) => {
 
     setFormData((prevFormData) => ({
       ...prevFormData,
-      service: selectedServiceId, // Store the selected service's ID in formData
+      serviceId: selectedServiceId, // Store the selected service's ID in formData
     }));
     setSelectedService(selectedService); // Update the selectedService state
   };
   const getServiceDetails = () => {
-    const selectedService = services.find((service) => service._id === formData.service);
+    const selectedService = services.find((service) => service._id === formData.serviceId);
     if (selectedService) {
       return (
         <Flex
@@ -117,7 +118,27 @@ const ProfessionalCard = ({ professional, onBook }) => {
   };
   const handleBookAppointment = () => {
     // Add your booking logic here
-    console.log('Booking appointment:', formData);
+    // const apointmentData = {
+
+    // }
+    // fetch("http://localhost:8080/appointment", {
+    //   method: 'POST',
+    //   headers: {
+    //     'Authorization': `Bearer ${loginToken}`,
+    //     'Content-Type': 'application/json'
+    //   },
+    //   body: JSON.stringify(formData)
+    // })
+    // .then(response => {
+    //   return response.json();
+    // })
+    // .then(data => {
+    //   console.log('Appointment successfully created:', data);
+    // })
+    // .catch(error => {
+    //   console.error('Error:', error);
+    // });
+    console.log(JSON.stringify(formData))
   
     toast({
       title: `Appointment Booked!`,

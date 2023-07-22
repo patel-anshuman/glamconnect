@@ -4,18 +4,18 @@ const Category = require("../Model/category.model");
 const Appointment = require("../Model/appointment.model");
 const Professional = require("../Model/professional.model");
 const Service = require("../Model/service.modal");
-const {auth} = require('../Middlewares/auth.middleware');
+const { auth } = require("../Middlewares/auth.middleware");
 
-const nodemailer = require('nodemailer');
+const nodemailer = require("nodemailer");
 const Router = express.Router();
 const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
+    host: "smtp.gmail.com",
     port: 587,
     secure: false,
     auth: {
-        user: 'glamconnect18@gmail.com',
-        pass: 'fbjryezlklsmqnpo'
-    }
+        user: "glamconnect18@gmail.com",
+        pass: "fbjryezlklsmqnpo",
+    },
 });
 
 Router.get("/", auth, (req, res) => {
@@ -35,7 +35,8 @@ Router.get("/professionals", async (req, res) => {
 Router.get("/professionals/:category", async (req, res) => {
     const category = req.params.category;
     try {
-        const professionals = await Professional.find({ category }).populate("services")
+        const professionals = await Professional.find({ category })
+            .populate("services")
             .populate("category");
         res.json(professionals);
     } catch (err) {
@@ -103,14 +104,16 @@ Router.post("/categories", async (req, res) => {
 Router.get("/appointment/:appointmentId", async (req, res) => {
     const { appointmentId } = req.params;
     try {
-        const appointments = await Appointment.findById(appointmentId).populate("professional").populate("service").populate("user")
-        res.json(appointments)
+        const appointments = await Appointment.findById(appointmentId)
+            .populate("professional")
+            .populate("service")
+            .populate("user");
+        res.json(appointments);
+    } catch (error) {
+        res.status(400).json({ message: "some error occurred", error });
     }
-    catch (error) {
-        res.status(400).json({ message: "some error occurred", error })
-    }
-})
-Router.post("/appointment", async (req, res) => {
+});
+Router.post("/appointment", auth, async (req, res) => {
     try {
         const {
             name,
@@ -121,12 +124,13 @@ Router.post("/appointment", async (req, res) => {
             message,
             professionalId,
             serviceId,
+            userID,
         } = req.body;
         const newAppointment = new Appointment({
             name,
             email,
             phone,
-            user: req.body.user,
+            user: userID,
             date,
             time,
             message,
@@ -135,7 +139,9 @@ Router.post("/appointment", async (req, res) => {
         });
 
         // const savedAppointment = await newAppointment.save();
-        const createdAppointment = await Appointment.findById(newAppointment._id).populate("professional").populate("service");
+        const createdAppointment = await Appointment.findById(newAppointment._id)
+            .populate("professional")
+            .populate("service");
         // res.status(201).json(createdAppointment);
         const emailHTML = `
         <!DOCTYPE html>
@@ -162,10 +168,11 @@ Router.post("/appointment", async (req, res) => {
             }
     
             .appointment-details {
-                background-color: #f5f5f5;
+                background-color: purple;
                 padding: 15px;
                 border-radius: 5px;
                 margin-bottom: 20px;
+                color:white;
             }
     
             .appointment-details p {
@@ -205,20 +212,22 @@ Router.post("/appointment", async (req, res) => {
         </html>
         `;
         const mailOptions = {
-            from: 'glamconnect18@gmail.com',
+            from: "glamconnect18@gmail.com",
             to: createdAppointment.professional.email,
-            subject: 'New Appointment Booking  <Read Required>',
+            subject: "New Appointment Booking  <Read Required>",
             html: emailHTML,
         };
 
         // Send the email
         transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
-                console.error('Error sending email:', error);
-                return res.status(500).json({ message: 'Error sending email.' });
+                console.error("Error sending email:", error);
+                return res.status(500).json({ message: "Error sending email." });
             }
-            console.log('Email sent:', info.response);
-            res.status(200).json({ message: 'Appointment has been booked and Email sent successfully.' });
+            console.log("Email sent:", info.response);
+            res.status(200).json({
+                message: "Appointment has been booked and Email sent successfully.",
+            });
         });
     } catch (error) {
         console.error("Error creating appointment:", error);
@@ -227,18 +236,102 @@ Router.post("/appointment", async (req, res) => {
             .json({ message: "An error occurred while creating the appointment." });
     }
 });
-Router.put("/appointment/:appointmentId", async (req, res) => {
+Router.put("/appointment/:appointmentId", auth, async (req, res) => {
     try {
         const appointmentId = req.params.appointmentId;
         const { status } = req.body;
-        const appointment = await Appointment.findById(appointmentId);
+        const appointment = await Appointment.findById(appointmentId).populate("professional").populate("service");
         if (!appointment) {
             return res.status(404).json({ message: "Appointment not found." });
         }
         appointment.status = status;
         const updatedAppointment = await appointment.save();
 
+        if (status == "accepted") {
+            const userEmailHTML = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Appointment Accepted</title>
+            <style>
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
 
+h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+p {
+    margin: 0;
+    margin-bottom: 10px;
+}
+
+.appointment-details {
+    background-color: #f5f5f5;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.appointment-details p {
+    margin: 0;
+}
+
+.cta-button {
+    display: inline-block;
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+}
+</style>
+        </head>
+        <body>
+            <h1>Appointment Accepted</h1>
+            <div class="appointment-details">
+                <p>Hello ${appointment.user.name},</p>
+                <p>Your appointment has been accepted:</p>
+                <ul>
+                    <li><strong>Service:</strong> ${appointment.service.name}</li>
+                    <li><strong>Duration:</strong> ${appointment.service.duration}</li>
+                    <li><strong>Price:</strong> ${appointment.service.amount}</li>
+                    <li><strong>Date:</strong> ${appointment.date}</li>
+                    <li><strong>Time:</strong> ${appointment.time}</li>
+                </ul>
+                <p>We are looking forward to seeing you soon!</p>
+                <p>Please go to the website and in the appointment section. <strong>select the payment method</strong></p>
+                <a href="http://localhost:3000">GlamConnect</a>
+            </div>
+            <p>Best regards,</p>
+            <p>Your Team at Glam Connect</p>
+        </body>
+        </html>
+        `;
+
+            const userMailOptions = {
+                from: 'glamconnect18@gmail.com',
+                to: appointment.user.email,
+                subject: 'Appointment Accepted <Read Required>',
+                html: userEmailHTML,
+            };
+            transporter.sendMail(userMailOptions, (error, info) => {
+                if (error) {
+                    console.error("Error sending email:", error);
+                    return res.status(500).json({ message: "Error sending email." });
+                }
+                console.log("Email sent:", info.response);
+                res.status(200).json({
+                    message: "Appointment has been accepted and Email sent successfully.",
+                });
+            });
+        }
         res.status(200).json(updatedAppointment);
     } catch (error) {
         console.error("Error updating appointment status:", error);
@@ -284,6 +377,6 @@ Router.post("/service", async (req, res) => {
 });
 Router.post("/add", async (req, res) => {
     const data = await Professional.insertMany(req.body);
-    res.send(data)
-})
+    res.send(data);
+});
 module.exports = Router;

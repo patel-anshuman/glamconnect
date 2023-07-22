@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import AppointmentDetails from '../Components/AppointmentDetails';
 import axios from "axios"
-const Appointment = () => {
+const Appointment = ({baseServerURL}) => {
   const { id } = useParams();
   const [appointment, setAppointment] = useState(null);
 

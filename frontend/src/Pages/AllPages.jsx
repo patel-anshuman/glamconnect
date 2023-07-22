@@ -8,17 +8,17 @@ import Signup from './Signup'
 import Login from './Login'
 import Appointment from './Appointment'
 
-const AllPages = () => {
+const AllPages = ({baseServerURL}) => {
   return (
     <Routes>
-        <Route path='/' element={<Home/>}/>
-        <Route path='/signup' element={<Signup/>}/>
-        <Route path='/login' element={<Login/>}/>
-        <Route path='/services' element={<Services/>}/>
-        <Route path='/categories' element={<BeautyCategoriesPage/>}/>
-        <Route path="/login" element={<Signup/>}/>
-        <Route path='/categories/professionals/:id' element={<ProfessionalsPage/>}/>
-        <Route path='/appointment/:id' element={<Appointment/>}/>
+        <Route path='/' element={<Home baseServerURL={baseServerURL}/>}/>
+        <Route path='/signup' element={<Signup baseServerURL={baseServerURL}/>}/>
+        <Route path='/login' element={<Login baseServerURL={baseServerURL}/>}/>
+        <Route path='/services' element={<Services baseServerURL={baseServerURL}/>}/>
+        <Route path='/categories' element={<BeautyCategoriesPage baseServerURL={baseServerURL}/>}/>
+        <Route path="/login" element={<Signup baseServerURL={baseServerURL}/>}/>
+        <Route path='/categories/professionals' element={<ProfessionalsPage baseServerURL={baseServerURL}/>}/>
+        <Route path='/appointment/:id' element={<Appointment baseServerURL={baseServerURL}/>}/>
         <Route path='*' element={<h1>Page Not Found</h1>}/>
     </Routes>
   )

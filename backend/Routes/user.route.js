@@ -2,6 +2,9 @@ const express = require("express");
 const nodemailer = require("nodemailer");
 const randomstring = require("randomstring");
 const UserModel = require("../Model/user.model");
+const {auth} = require("../Middlewares/auth.middleware");
+const BlackListModel = require("../Model/blacklist.model");
+require("dotenv").config();
 
 const userRouter = express.Router();
 
@@ -85,7 +88,7 @@ userRouter.post("/register", async (req, res) => {
     }
 
     // Hash the password using bcrypt with 10 rounds of salt
-    const hash = await bcrypt.hash(password, 10);
+    const hash = await bcrypt.hash(password, process.env.salt);
 
     // Create a new user object
     const newUser = new UserModel({
@@ -115,6 +118,7 @@ userRouter.post("/register", async (req, res) => {
   }
 });
 
+//Get user data for navbar & dashboard
 userRouter.get("/data", async (req, res) => {
   try {
     const users = await UserModel.find();
@@ -125,7 +129,7 @@ userRouter.get("/data", async (req, res) => {
   }
 });
 
-
+// User Manual Login
 userRouter.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -150,7 +154,7 @@ userRouter.post("/login", async (req, res) => {
         currentTime: Date.now()
       },
       process.env.JWT_SECRET_KEY,
-      // { expiresIn: "1hr" }
+      { expiresIn: "7d" }
     );
 
     // Return a success response with the token and user data
@@ -172,12 +176,38 @@ userRouter.post("/login", async (req, res) => {
 
 const updatePassword = async (password) => {
   try {
-    const hasPass = await bcrypt.hash(password, 8);
+    const hasPass = await bcrypt.hash(password, process.env.salt);
     return hasPass;
   } catch (error) {
     throw new Error("Failed to hash password");
   }
 };
+
+userRouter.post('/data', auth, async (req, res) => {
+  try {
+    const { userID } = req.body;
+
+    // Find the user by userID in the database
+    const user = await UserModel.findById(userID);
+
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    // Extract the necessary user data
+    const userData = {
+      name: user.name,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+    };
+
+    // Return the user data in the response
+    res.status(200).json(userData);
+  } catch (error) {
+    // Handle any unexpected errors
+    res.status(500).json({ msg: "Internal Server Error" });
+  }
+});
 
 userRouter.post("/reset-password", async (req, res) => {
   try {
@@ -254,7 +284,7 @@ userRouter.post("/change-password", async (req, res) => {
     }
 
     // Hash the new password
-    const hash = await bcrypt.hash(newPassword, 10);
+    const hash = await bcrypt.hash(newPassword, process.env.salt);
 
     // Update the user's password in the database
     await UserModel.findByIdAndUpdate(
@@ -360,13 +390,15 @@ userRouter.get("/verify", async (req, res) => {
 
 userRouter.get("/logout", async (req, res) => {
   try {
-    const token = req.headers?.authorization.split[1];
-    if (!token) return res.status(403);
-    let blackListedToken = new BlackListModel({ token });
-    await blackListedToken.save();
-    res.status(200).json({ msg: "Logout Succesful" });
+    let token = req.headers.authorization;
+    if (!token) {
+      return res.status(403).json({ msg: "Missing token in headers" });
+    }
+    token = token.split(" ")[1];
+    await BlackListModel.create({ token });   // Save the blacklisted token in the database
+    res.status(200).json({ msg: "Logout Successful" });
   } catch (error) {
-    res.status(400).json({ msg: error.message });
+    res.status(500).json({ msg: error.message });
   }
 });
 

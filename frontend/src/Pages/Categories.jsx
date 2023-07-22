@@ -2,7 +2,7 @@ import React, { useState,useEffect } from 'react';
 import { Box, Grid, Image, Text, Button, Skeleton ,Center} from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 
-const BeautyCategoriesPage = () => {
+const BeautyCategoriesPage = ({baseServerURL}) => {
     // State to track image loading
     const nav = useNavigate();
     const [imageLoaded, setImageLoaded] = useState(false);

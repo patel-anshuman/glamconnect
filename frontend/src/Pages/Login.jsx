@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useToast } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
@@ -13,7 +13,7 @@ import {
   Divider,
   Link,
 } from '@chakra-ui/react';
-
+import Context, { myContext } from "../contextAPI/Context";
 const Login = ({baseServerURL}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -23,7 +23,7 @@ const Login = ({baseServerURL}) => {
 
   const navigate = useNavigate();
   const toast = useToast();
-
+const {userLogin} =useContext(myContext)
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -61,7 +61,7 @@ const Login = ({baseServerURL}) => {
 
           // Save the token in cookies
           Cookies.set('token', data.token, { expires: 7 }); // Set the cookie to expire in 7 days
-
+            userLogin();
           toast({
             title: 'Login Successful',
             description: 'You have successfully logged in.',

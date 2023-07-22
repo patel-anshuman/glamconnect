@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Grid } from '@chakra-ui/react';
 import ProfessionalCard from '../Components/ProfessionalCard';
 
+
 // Sample data for professionals (replace with your own data)
 const professionals = [
     {
@@ -55,6 +56,22 @@ const professionals = [
     // Add more professionals here
   ];
 const ProfessionalsPage = ({baseServerURL}) => {
+
+import { useEffect ,useState} from 'react';
+import { useParams } from 'react-router-dom';
+const ProfessionalsPage = () => {
+  const [professionals, setProfessional] = useState([])
+  const {id} =  useParams();
+  useEffect(()=>{
+    const fetchProfessional=async()=>{
+      const response = await fetch(`http://localhost:8080/professionals/${id}`);
+      const data = await response.json();
+      console.log(data);
+      setProfessional(data)
+    }
+    fetchProfessional();
+  },[])
+
   const handleBooking = (professionalId) => {
     // Replace with your booking logic
     console.log('Booking professional with ID:', professionalId);
@@ -62,12 +79,12 @@ const ProfessionalsPage = ({baseServerURL}) => {
 
   return (
     <Box p={4}>
-      <Grid templateColumns="repeat(3, 1fr)" gap={6}>
+      <Grid templateColumns="repeat(3, 1fr)" gap={6} placeItems={"center"}>
         {professionals.map((professional) => (
           <ProfessionalCard
-            key={professional.id}
+            key={professional._id}
             professional={professional}
-            onBook={() => handleBooking(professional.id)}
+            onBook={() => handleBooking(professional._id)}
           />
         ))}
       </Grid>

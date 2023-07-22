@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import AppointmentDetails from '../Components/AppointmentDetails';
 import axios from "axios"
+import { useToast } from '@chakra-ui/react';
+
 const Appointment = ({baseServerURL}) => {
   const { id } = useParams();
   const [appointment, setAppointment] = useState(null);
-
+  const toast = useToast();
   // Replace this mock fetch with an actual API call to get the appointment data
   useEffect(() => {
     const fetchAppointment = async () => {
@@ -14,6 +16,7 @@ const Appointment = ({baseServerURL}) => {
         const response = await fetch(`http://localhost:8080/appointment/${id}`);
         const data = await response.json();
         setAppointment(data);
+         console.log(data) 
       } catch (error) {
         console.error('Error fetching appointment:', error);
       }
@@ -23,7 +26,29 @@ const Appointment = ({baseServerURL}) => {
   }, []);
 
   const handleAccept = () => {
-    axios.put()
+    fetch(`http://localhost:8080/appointment/${id}`,{
+      method: 'PUT',
+      headers: {
+        
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({status:"accepted"})
+    }).then(response => {
+      return response.json();
+    })
+    .then(data => {
+      console.log('Appointment successfully created:', data);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+    // console.log(JSON.stringify(formData))
+  
+    toast({
+      title: `Appointment Accepted!`,
+      status: 'success',
+      isClosable: true,
+    });
   };
 
   const handleReject = () => {

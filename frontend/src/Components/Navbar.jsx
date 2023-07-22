@@ -40,7 +40,7 @@ const Navbar = ({ baseServerURL }) => {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
+              Authorization: `logged ${token}`,
             },
           });
 
@@ -58,7 +58,7 @@ const Navbar = ({ baseServerURL }) => {
       }
     };
     fetchUserDetails();
-  }, [user]);
+  }, [login]);
 
   const handleLogout = async () => {
     try {
@@ -73,7 +73,7 @@ const Navbar = ({ baseServerURL }) => {
       const response = await fetch(`${baseServerURL}/user/logout`, {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `navbar ${token}`,
         },
       });
 
@@ -88,8 +88,8 @@ const Navbar = ({ baseServerURL }) => {
           isClosable: true,
         });
         Cookies.remove("token");    // Clear the authentication token from cookies
-        setUser(null); 
         userLogout();   // Reset the user state to null
+        // setUser(null); 
         navigate("/");    // Refresh home page
       } else {
         // If the logout request fails, show an error toast
@@ -146,8 +146,10 @@ const Navbar = ({ baseServerURL }) => {
           pt={{ base: 4, md: 0 }}
           color="white"
           fontWeight="500"
+          gap="45px"
+          fontSize={"18px"}
         >
-          <Text
+          <Link
             as="a"
             href="#"
             px={2}
@@ -155,17 +157,18 @@ const Navbar = ({ baseServerURL }) => {
             _hover={{ textDecoration: "underline" }}
           >
             Home
-          </Text>
-          <Text
+          </Link>
+          <Link
             as="a"
             href="#"
             px={2}
             py={1}
+            to="/categories"
             _hover={{ textDecoration: "underline" }}
           >
             Services
-          </Text>
-          <Text
+          </Link>
+          <Link
             as="a"
             href="#"
             px={2}
@@ -173,7 +176,7 @@ const Navbar = ({ baseServerURL }) => {
             _hover={{ textDecoration: "underline" }}
           >
             About
-          </Text>
+          </Link>
         </Flex>
       </Box>
 

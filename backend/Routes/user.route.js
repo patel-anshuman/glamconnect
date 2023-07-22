@@ -2,7 +2,7 @@ const express = require("express");
 const nodemailer = require("nodemailer");
 const randomstring = require("randomstring");
 const UserModel = require("../Model/user.model");
-const {auth} = require("../Middlewares/auth.middleware");
+const { auth } = require("../Middlewares/auth.middleware");
 const BlackListModel = require("../Model/blacklist.model");
 require("dotenv").config();
 
@@ -332,9 +332,9 @@ userRouter.post("/forget-password", async (req, res) => {
     sendResetPassword(user.username, email, randomString);
 
     res.status(200).send({
-        success: true,
-        msg: "Reset password email is sent to your email",
-      });
+      success: true,
+      msg: "Reset password email is sent to your email",
+    });
   } catch (error) {
     res.status(400).send({ success: false, msg: error.message });
   }
@@ -420,7 +420,7 @@ userRouter.post("/sendlink", async (req, res) => {
     } else {
       res.status(400).send({ msg: "This mail don't exist" });
     }
-  } catch (error) {}
+  } catch (error) { }
 });
 
 module.exports = userRouter;

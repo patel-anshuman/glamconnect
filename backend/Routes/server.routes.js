@@ -138,11 +138,10 @@ Router.post("/appointment", auth, async (req, res) => {
             service: serviceId,
         });
 
-        // const savedAppointment = await newAppointment.save();
-        const createdAppointment = await Appointment.findById(newAppointment._id)
-            .populate("professional")
-            .populate("service");
+        const savedAppointment = await newAppointment.save();
+        const createdAppointment = await Appointment.findById(newAppointment._id).populate("professional").populate("service");
         // res.status(201).json(createdAppointment);
+
         const emailHTML = `
         <!DOCTYPE html>
         <html>
@@ -168,7 +167,7 @@ Router.post("/appointment", auth, async (req, res) => {
             }
     
             .appointment-details {
-                background-color: purple;
+                background-color: #6b46c1;
                 padding: 15px;
                 border-radius: 5px;
                 margin-bottom: 20px;
@@ -273,7 +272,7 @@ p {
 }
 
 .appointment-details {
-    background-color: #f5f5f5;
+    background-color: #6b46c1;
     padding: 15px;
     border-radius: 5px;
     margin-bottom: 20px;
@@ -317,7 +316,7 @@ p {
 
             const userMailOptions = {
                 from: 'glamconnect18@gmail.com',
-                to: appointment.user.email,
+                to: appointment.email,
                 subject: 'Appointment Accepted <Read Required>',
                 html: userEmailHTML,
             };

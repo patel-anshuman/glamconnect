@@ -1,15 +1,12 @@
-const express = require('express')
-const nodemailer = require("nodemailer")
+const express = require("express");
+const nodemailer = require("nodemailer");
 const randomstring = require("randomstring");
-const UserModel = require('../Model/user.model')
+const UserModel = require("../Model/user.model");
 
-const userrouter = express.Router()
-const bcrypt = require('bcrypt')
+const userRouter = express.Router();
 
-
-const jwt = require('jsonwebtoken')
-
-
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 //---------------------- OAuth GMail -------------------------
 const sendVerificationMail = async (name, email, userId) => {
@@ -44,7 +41,6 @@ const sendVerificationMail = async (name, email, userId) => {
   }
 };
 
-
 const sendResetPassword = async (username, email, token) => {
   try {
     const transporter = nodemailer.createTransport({
@@ -78,75 +74,101 @@ const sendResetPassword = async (username, email, token) => {
 };
 
 // User Manual Signup
-userrouter.post("/register", async (req, res) => {
-
+userRouter.post("/register", async (req, res) => {
   try {
     const { name, phoneNumber, email, password, role } = req.body;
 
-    const userExist = await UserModel.find({ name, phoneNumber, email, password, role });
-    if (userExist.length !== 0) {
-      return res.status(401).send({ msg: "User Already Registered" });
+    // Check if the user already exists by email
+    const existingUser = await UserModel.findOne({ email });
+    if (existingUser) {
+      return res.status(409).json({ msg: "User already registered! Please login." });
     }
-    const hash = await bcrypt.hash(password, 8);
-    const newUser = new UserModel({ name, phoneNumber, email, password: hash, role });
 
+    // Hash the password using bcrypt with 10 rounds of salt
+    const hash = await bcrypt.hash(password, 10);
+
+    // Create a new user object
+    const newUser = new UserModel({
+      name,
+      phoneNumber,
+      email,
+      password: hash,
+      role,
+    });
+
+    // Save the user to the database
     const userData = await newUser.save();
+
     if (userData) {
+      // You can send the verification email asynchronously, as it might take time.
       sendVerificationMail(name, phoneNumber, email, userData._id);
+
+      // Return a success response
       res.status(200).json({ msg: "Registration successful", userData });
     } else {
-      res.status(401).json({ msg: "Registration failed" });
+      // In case the user could not be saved to the database
+      res.status(500).json({ msg: "Registration failed" });
     }
   } catch (error) {
-    res.status(400).json({ msg: "Something went wrong" });
+    // Handle any unexpected errors
+    res.status(500).json({ msg: "Internal Server Error" });
   }
+});
 
-})
-
-userrouter.get("/data", async (req, res) => {
+userRouter.get("/data", async (req, res) => {
   try {
-    const users = await UserModel.find()
-    res.send("all the users data will be send")
-    console.log(users)
+    const users = await UserModel.find();
+    res.send("all the users data will be send");
+    console.log(users);
   } catch (err) {
-    res.send({ "msg": "cannot register", "err": err.message })
+    res.send({ msg: "cannot register", err: err.message });
   }
 });
 
 
-
-userrouter.post("/login", async (req, res) => {
+userRouter.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    // Check if the user exists by email
     const isUserPresent = await UserModel.findOne({ email });
     if (!isUserPresent) {
-      return res.status(401).json({ msg: "User not found!"});
+      return res.status(401).json({ msg: "User not registered! Please signup." });
     }
+
+    // Compare the provided password with the hashed password in the database
     const isPass = await bcrypt.compare(password, isUserPresent.password);
     if (!isPass) {
-      return res.status(401).send({ msg: "Wrong credentials" });
+      return res.status(401).json({ msg: "Wrong credentials" });
     }
-    const token = await jwt.sign(
+
+    // Generate a JWT token with the user ID and other necessary data
+    const token = jwt.sign(
       {
-        userId: isUserPresent._id,
+        userID: isUserPresent._id,
+        role: isUserPresent.role,
+        currentTime: Date.now()
       },
-      process.env.SECRET,
+      process.env.JWT_SECRET_KEY,
       { expiresIn: "1hr" }
     );
-    res.send({
+
+    // Return a success response with the token and user data
+    res.status(200).json({
       msg: "Login Success",
       token,
       name: isUserPresent.name,
+      phoneNumber: isUserPresent.phoneNumber,
       email: isUserPresent.email,
-      userId: isUserPresent._id,
+      userID: isUserPresent._id,
       isVerified: isUserPresent.isVerified,
-      role: isUserPresent.role
+      role: isUserPresent.role,
     });
   } catch (error) {
-    res.status(401).send(error.message);
+    // Handle any unexpected errors
+    res.status(500).json({ msg: "Internal Server Error" });
   }
 });
-
 
 const updatePassword = async (password) => {
   try {
@@ -157,54 +179,109 @@ const updatePassword = async (password) => {
   }
 };
 
-
-
-
-userrouter.get("/reset-password", async (req, res) => {
+userRouter.post("/reset-password", async (req, res) => {
   try {
-    const token = req.query.token;
-    const tokenData = await UserModel.findOne({ token });
+    const token = req.headers.authorization;
 
-    if (tokenData && tokenData._id) {
-      console.log(tokenData._id.toString());
-      res.cookie("userId", tokenData._id.toString(), { maxAge: 1000 * 60 });
-
-    } else {
-      res.status(400).send({ success: false, msg: "This link expired" });
+    // Check if the token exists in the headers
+    if (!token) {
+      return res.status(401).json({ success: false, msg: "Authorization token missing" });
     }
+
+    // Extract the token value from the "Authorization" header (e.g., "Bearer <token>")
+    const tokenValue = token.split(" ")[1];
+
+    // Verify the token and extract the user ID from it
+    const decodedToken = jwt.verify(tokenValue, process.env.SECRET);
+    const userId = decodedToken.userId;
+
+    // Check if the user exists by the extracted user ID
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, msg: "User not found" });
+    }
+
+    // Check if the token has expired (if required)
+    // Add additional logic if the token has an expiry date and needs to be checked for expiration
+
+    // Set a secure http-only cookie with the user ID to use it in the frontend for the password reset
+    res.cookie("userId", userId, { httpOnly: true, secure: true });
+
+    // Optionally, you can send the user ID to the frontend and handle the password reset UI there
+
+    // Return a success response
+    res.status(200).json({ success: true, msg: "Token verified and user ID set in the cookie" });
   } catch (error) {
-    res.status(400).send({ success: false, msg: error.message });
+    // Handle token verification errors
+    if (error instanceof jwt.TokenExpiredError) {
+      return res.status(400).json({ success: false, msg: "Token has expired" });
+    } else if (error instanceof jwt.JsonWebTokenError) {
+      return res.status(400).json({ success: false, msg: "Invalid token" });
+    } else {
+      // Handle any unexpected errors
+      res.status(500).json({ success: false, msg: "Internal Server Error" });
+    }
   }
 });
 
-userrouter.post("/change-password", async (req, res) => {
+userRouter.post("/change-password", async (req, res) => {
   try {
-    const userId = req.cookies.userId;
-    if (!userId) {
-      return res.status(400).send({ success: false, msg: "User ID not found" });
+    const token = req.headers.authorization;
+
+    // Check if the token exists in the headers
+    if (!token) {
+      return res.status(401).json({ success: false, msg: "Authorization token missing" });
     }
 
-    const userToken = await UserModel.findById(userId);
-    if (userToken) {
-      const password = req.body.password;
-      const newPassword = await updatePassword(password);
+    // Extract the token value from the "Authorization" header (e.g., "Bearer <token>")
+    const tokenValue = token.split(" ")[1];
 
-      await UserModel.findByIdAndUpdate(
-        { _id: userId },
-        { $set: { password: newPassword, token: "" } },
-        { new: true }
-      );
-anshita
-      res.status(200).send({ success: true, msg: "Password changed successfully" });
-    } else {
-      res.status(400).send({ success: false, msg: "This link expired" });
+    // Verify the token and extract the user ID from it
+    const decodedToken = jwt.verify(tokenValue, process.env.SECRET);
+    const userId = decodedToken.userId;
+
+    // Check if the user exists by the extracted user ID
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, msg: "User not found" });
     }
+
+    const newPassword = req.body.password;
+
+    // Validate the new password (add any required validations)
+    if (newPassword.length < 8) {
+      return res.status(400).json({ success: false, msg: "Password should be at least 8 characters long" });
+    }
+
+    // Hash the new password
+    const hash = await bcrypt.hash(newPassword, 10);
+
+    // Update the user's password in the database
+    await UserModel.findByIdAndUpdate(
+      { _id: userId },
+      { $set: { password: hash } },
+      { new: true }
+    );
+
+    // Optionally, you can invalidate the user's existing tokens to enforce re-authentication
+    // Add additional logic if you want to invalidate existing tokens
+
+    // Return a success response
+    res.status(200).json({ success: true, msg: "Password changed successfully" });
   } catch (error) {
-    res.status(400).send({ success: false, msg: error.message });
+    // Handle token verification errors
+    if (error instanceof jwt.TokenExpiredError) {
+      return res.status(400).json({ success: false, msg: "Token has expired" });
+    } else if (error instanceof jwt.JsonWebTokenError) {
+      return res.status(400).json({ success: false, msg: "Invalid token" });
+    } else {
+      // Handle any unexpected errors
+      res.status(500).json({ success: false, msg: "Internal Server Error" });
+    }
   }
 });
 
-userrouter.post("/forget-password", async (req, res) => {
+userRouter.post("/forget-password", async (req, res) => {
   const { email } = req.body;
 
   try {
@@ -215,67 +292,93 @@ userrouter.post("/forget-password", async (req, res) => {
     }
 
     if (!user.isVerified) {
-      return res.status(301).send({ success: false, msg: "Please verify your email" });
+      return res
+        .status(301)
+        .send({ success: false, msg: "Please verify your email" });
     }
 
     const randomString = randomstring.generate();
     await UserModel.updateOne({ email }, { $set: { token: randomString } });
     sendResetPassword(user.username, email, randomString);
 
-    res.status(200).send({ success: true, msg: "Reset password email is sent to your email" });
+    res.status(200).send({
+        success: true,
+        msg: "Reset password email is sent to your email",
+      });
   } catch (error) {
     res.status(400).send({ success: false, msg: error.message });
   }
 });
 
-
-
-userrouter.get("/verify", async (req, res) => {
+userRouter.get("/verify", async (req, res) => {
   try {
-    const userId = req.query.id;
+    const token = req.headers.authorization;
 
-    const user = await UserModel.updateOne(
-      { _id: userId },
-      { $set: { isVerified: true } }
-    );
-    if (!user) {
-      return res
-        .status(404)
-        .json({ error: "User not found" });
+    // Check if the token exists in the headers
+    if (!token) {
+      return res.status(401).json({ error: "Authorization token missing" });
     }
 
-    if (user.isVerified) {
+    // Extract the token value from the "Authorization" header (e.g., "Bearer <token>")
+    const tokenValue = token.split(" ")[1];
+
+    // Verify the token and extract the user ID from it
+    const decodedToken = jwt.verify(tokenValue, process.env.SECRET);
+    const userId = decodedToken.userId;
+
+    // Update the user's verification status in the database
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      { _id: userId },
+      { $set: { isVerified: true } },
+      { new: true }
+    );
+
+    // Check if the user exists and was successfully updated
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Check if the user is already verified
+    if (updatedUser.isVerified) {
       return res.status(200).json({ message: "Email already verified" });
     }
 
-   
+    // Return a success response if the user was verified successfully
+    res.status(200).json({ message: "Email verified successfully" });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "Internal server error" });
+    // Handle token verification errors
+    if (error instanceof jwt.TokenExpiredError) {
+      return res.status(400).json({ error: "Token has expired" });
+    } else if (error instanceof jwt.JsonWebTokenError) {
+      return res.status(400).json({ error: "Invalid token" });
+    } else {
+      // Handle any unexpected errors
+      res.status(500).json({ error: "Internal server error" });
+    }
   }
 });
 
-userrouter.get("/logout", async (req, res) => {
+userRouter.get("/logout", async (req, res) => {
   try {
-    const token = req.headers?.authorization;
+    const token = req.headers?.authorization.split[1];
     if (!token) return res.status(403);
     let blackListedToken = new BlackListModel({ token });
     await blackListedToken.save();
-    res.send({ msg: "logout succesfull" });
+    res.status(200).json({ msg: "Logout Succesful" });
   } catch (error) {
-    res.send(error.message);
+    res.status(400).json({ msg: error.message });
   }
 });
 
-userrouter.delete("/delete/:id", async (req, res) => {
-  const { id } = req.params
-  const deleteUsers = await UserModel.findByIdAndDelete({ _id: id })
-  return res.status(200).send({ msg: "User Deleted" })
-})
+userRouter.delete("/delete/:id", async (req, res) => {
+  const { id } = req.params;
+  const deleteUsers = await UserModel.findByIdAndDelete({ _id: id });
+  return res.status(200).send({ msg: "User Deleted" });
+});
 
 // To send verification link again
 
-userrouter.post("/sendlink", async (req, res) => {
+userRouter.post("/sendlink", async (req, res) => {
   try {
     const { email } = req.body;
     const user = await UserModel.findOne({ email: email });
@@ -285,9 +388,7 @@ userrouter.post("/sendlink", async (req, res) => {
     } else {
       res.status(400).send({ msg: "This mail don't exist" });
     }
-  } catch (error) { }
+  } catch (error) {}
 });
 
-
-
-module.exports = userrouter
+module.exports = userRouter;

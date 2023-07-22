@@ -1,15 +1,23 @@
 const express = require('express');
-const app = express();
 const cors = require("cors");
 require("dotenv").config()
-const Connection = require('./Configs/db');
-const Router = require("./Routes/server.routes");
-const userrouter = require("./Routes/user.route");
-const MaiLRouter = require('./Routes/sendingemail.route');
 
-app.use(cors());
-app.use(express.json());
-app.use("/", Router);
-app.use("/", MaiLRouter)
-app.use("/user", userrouter);
-app.listen(8080, Connection());
+// Import custom route modules
+const Router = require("./Routes/server.routes"); // Import server routes
+const userRoute = require("./Routes/user.route"); // Import user routes
+const MaiLRouter = require('./Routes/sendingemail.route'); // Import email sending routes
+
+const {auth} = require('./Middlewares/auth.middleware');
+
+const app = express(); // Create an Express app
+
+app.use(cors()); // Enable Cross-Origin Resource Sharing
+app.use(express.json()); // Enable JSON parsing for request bodies
+
+app.use("/", MaiLRouter); // Use email sending routes for the root path
+app.use("/user", userRoute); // Use user routes for the "/user" path
+app.use("/", Router); // Use server routes for the root path
+
+// Import database connection configuration
+const Connection = require('./Configs/db');
+app.listen(process.env.port, Connection()); // Start the server and listen on port, establishing a database connection

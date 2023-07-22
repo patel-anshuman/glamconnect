@@ -101,7 +101,7 @@ const Signup = ({baseServerURL}) => {
             email,
             password,
           }),
-        });
+        })
 
         if (response.ok) {
           // Signup successful

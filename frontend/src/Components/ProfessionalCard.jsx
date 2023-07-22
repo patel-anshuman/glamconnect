@@ -27,7 +27,7 @@ import { Icon } from "@chakra-ui/react";
 import { FaInfoCircle } from "react-icons/fa";
 import { FiClock, FiInfo } from "react-icons/fi";
 import axios from "axios"
-
+import Cookies from "js-cookie";
 const ProfessionalCard = ({ professional, onBook }) => {
   const { name, imageSrc, description, skillset, moreInfo, services,_id } = professional;
   const {id} = useParams();
@@ -35,7 +35,7 @@ const ProfessionalCard = ({ professional, onBook }) => {
   const [selectedService, setSelectedService] = useState(null);
   const [currentProfessional, setCurrentProfessional] = useState("");
   const toast = useToast();
-  const loginToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI2NGJiZmE1MjQxNGQ1NGQyNDYxNWU4YTUiLCJyb2xlIjoidXNlciIsImN1cnJlbnRUaW1lIjoxNjkwMDQ1MjA1MTg5LCJpYXQiOjE2OTAwNDUyMDV9.IlalnWlMKZawoYV64UBNh0t8X6k9YRmTCbwH2U0QXdk";
+  const token = Cookies.get("token");
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -121,23 +121,23 @@ const ProfessionalCard = ({ professional, onBook }) => {
     // const apointmentData = {
 
     // }
-    // fetch("http://localhost:8080/appointment", {
-    //   method: 'POST',
-    //   headers: {
-    //     'Authorization': `Bearer ${loginToken}`,
-    //     'Content-Type': 'application/json'
-    //   },
-    //   body: JSON.stringify(formData)
-    // })
-    // .then(response => {
-    //   return response.json();
-    // })
-    // .then(data => {
-    //   console.log('Appointment successfully created:', data);
-    // })
-    // .catch(error => {
-    //   console.error('Error:', error);
-    // });
+    fetch("http://localhost:8080/appointment", {
+      method: 'POST',
+      headers: {
+        'Authorization': `thisistheone ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    })
+    .then(response => {
+      return response.json();
+    })
+    .then(data => {
+      console.log('Appointment successfully created:', data);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
     console.log(JSON.stringify(formData))
   
     toast({

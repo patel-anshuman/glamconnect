@@ -17,7 +17,7 @@ const AllPages = ({baseServerURL}) => {
         <Route path='/services' element={<Services baseServerURL={baseServerURL}/>}/>
         <Route path='/categories' element={<BeautyCategoriesPage baseServerURL={baseServerURL}/>}/>
         <Route path="/login" element={<Signup baseServerURL={baseServerURL}/>}/>
-        <Route path='/categories/professionals' element={<ProfessionalsPage baseServerURL={baseServerURL}/>}/>
+        <Route path='/categories/professionals/:id' element={<ProfessionalsPage baseServerURL={baseServerURL}/>}/>
         <Route path='/appointment/:id' element={<Appointment baseServerURL={baseServerURL}/>}/>
         <Route path='*' element={<h1>Page Not Found</h1>}/>
     </Routes>

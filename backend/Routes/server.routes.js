@@ -4,6 +4,8 @@ const Category = require("../Model/category.model");
 const Appointment = require("../Model/appointment.model");
 const Professional = require("../Model/professional.model");
 const Service = require("../Model/service.modal");
+const {auth} = require('../Middlewares/auth.middleware');
+
 const nodemailer = require('nodemailer');
 const Router = express.Router();
 const transporter = nodemailer.createTransport({
@@ -15,8 +17,9 @@ const transporter = nodemailer.createTransport({
         pass: 'fbjryezlklsmqnpo'
     }
 });
-Router.get("/", (req, res) => {
-    res.send("Welcome to GlamGuru Backend");
+
+Router.get("/", auth, (req, res) => {
+    res.status(200).send("Welcome to GlamGuru Backend");
 });
 
 Router.get("/professionals", async (req, res) => {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { FiLogOut } from "react-icons/fi";
 import { MdAccountCircle } from "react-icons/md";
 import { GrSchedules } from "react-icons/gr";
@@ -15,12 +16,15 @@ import {
   Button
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon, ChevronDownIcon } from "@chakra-ui/icons";
+import { useToast } from "@chakra-ui/react";
 import Cookies from "js-cookie";
 import { Link } from "react-router-dom";
 
-const Navbar = () => {
+const Navbar = ({ baseServerURL }) => {
   const { isOpen, onToggle } = useDisclosure();
   const [user, setUser] = useState(null);
+  const toast = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -28,7 +32,7 @@ const Navbar = () => {
         // Check if the token is present in cookies
         const token = Cookies.get("token");
         if (token) {
-          const response = await fetch("/api/login", {
+          const response = await fetch(`${baseServerURL}/user/data`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -46,14 +50,56 @@ const Navbar = () => {
           }
         }
       } catch (error) {
-        // Handle error if any occurred during the API call
         console.error("Error fetching user details:", error);
       }
     };
-
-    // Call the fetchUserDetails function
     fetchUserDetails();
-  }, []);
+  }, [user]);
+
+  const handleLogout = async () => {
+    try {
+      const token = Cookies.get("token"); // Get the authentication token from cookies
+
+      if (!token) {
+        console.error("Authentication token not found.");
+        return;
+      }
+      
+      // Make an API call to the backend route /user/logout with the bearer token in the headers
+      const response = await fetch(`${baseServerURL}/user/logout`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        // If the logout request is successful, show a success toast
+        console.log("Logout button clicked")
+        toast({
+          title: "Logout Successful",
+          description: "You have been logged out.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+        Cookies.remove("token");    // Clear the authentication token from cookies
+        setUser(null);    // Reset the user state to null
+        navigate("/");    // Refresh home page
+      } else {
+        // If the logout request fails, show an error toast
+        toast({
+          title: "Logout Failed",
+          description: "An error occurred while logging out.",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
 
   return (
     <Flex
@@ -145,7 +191,7 @@ const Navbar = () => {
                 <GrSchedules fontSize={"23px"} />
                 Appointments
               </MenuItem>
-              <MenuItem fontWeight="500" borderWidth="1px" borderTop="none" display={"flex"} borderLeft="none" borderRight="none" borderBottom="none" gap={"10px"}
+              <MenuItem fontWeight="500" borderWidth="1px" borderTop="none" display={"flex"} borderLeft="none" borderRight="none" borderBottom="none" gap={"10px"} onClick={handleLogout}
               >
                 <FiLogOut fontSize={"23px"} />
                 Logout

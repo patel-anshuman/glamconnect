@@ -14,7 +14,7 @@ import {
   Link,
 } from '@chakra-ui/react';
 
-const Login = () => {
+const Login = ({baseServerURL}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -44,7 +44,7 @@ const Login = () => {
       try {
         // Perform login logic here
         // Replace the following code with your login logic
-        const response = await fetch('/api/login', {
+        const response = await fetch(`${baseServerURL}/user/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

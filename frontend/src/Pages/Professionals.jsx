@@ -54,7 +54,7 @@ const professionals = [
     },
     // Add more professionals here
   ];
-const ProfessionalsPage = () => {
+const ProfessionalsPage = ({baseServerURL}) => {
   const handleBooking = (professionalId) => {
     // Replace with your booking logic
     console.log('Booking professional with ID:', professionalId);

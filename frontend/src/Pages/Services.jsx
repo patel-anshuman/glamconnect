@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Services = () => {
+const Services = ({baseServerURL}) => {
   return (
     <div>Services</div>
   )

@@ -4,7 +4,7 @@ import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { Box, Heading, Text, Flex, Container, Avatar } from '@chakra-ui/react';
 import { FaSearch, FaRegListAlt, FaCheckCircle } from 'react-icons/fa';
 
-const Home = () => {
+const Home = ({baseServerURL}) => {
 
   useEffect(() => {
     document.title = 'GlamConnect';

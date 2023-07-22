@@ -23,7 +23,7 @@ const categories = [
   },
 ];
 
-const BeautyCategoriesPage = () => {
+const BeautyCategoriesPage = ({baseServerURL}) => {
     // State to track image loading
     const [imageLoaded, setImageLoaded] = useState(false);
   

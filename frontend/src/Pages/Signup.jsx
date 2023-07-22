@@ -15,7 +15,7 @@ import {
 import { FaGoogle, FaFacebook } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
-const Signup = () => {
+const Signup = ({baseServerURL}) => {
   const [name, setName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [email, setEmail] = useState('');
@@ -90,7 +90,7 @@ const Signup = () => {
       try {
         // Perform signup logic
         // Make an API call to a server with the signup data
-        const response = await fetch('/api/signup', {
+        const response = await fetch(`${baseServerURL}/user/register`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

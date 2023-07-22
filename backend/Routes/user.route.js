@@ -150,7 +150,7 @@ userRouter.post("/login", async (req, res) => {
         currentTime: Date.now()
       },
       process.env.JWT_SECRET_KEY,
-      { expiresIn: "1hr" }
+      // { expiresIn: "1hr" }
     );
 
     // Return a success response with the token and user data

@@ -4,7 +4,6 @@ const professionalSchema = new mongoose.Schema({
   name: { type: String, required: true },
   imageSrc: { type: String, required: true },
   email: { type: String, required: true },
-  password: { type: String, required: true },
   description: { type: String, required: true },
   skillset: [{ type: String, required: true }],
   moreInfo: { type: String, required: true },

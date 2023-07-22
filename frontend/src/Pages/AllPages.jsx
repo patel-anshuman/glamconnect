@@ -17,7 +17,7 @@ const AllPages = () => {
         <Route path='/services' element={<Services/>}/>
         <Route path='/categories' element={<BeautyCategoriesPage/>}/>
         <Route path="/login" element={<Signup/>}/>
-        <Route path='/categories/professionals' element={<ProfessionalsPage/>}/>
+        <Route path='/categories/professionals/:id' element={<ProfessionalsPage/>}/>
         <Route path='/appointment/:id' element={<Appointment/>}/>
         <Route path='*' element={<h1>Page Not Found</h1>}/>
     </Routes>

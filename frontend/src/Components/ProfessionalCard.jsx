@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useState}from 'react';
 import {
   Box,
   Image,
@@ -17,14 +17,25 @@ import {
   Input,
   Textarea,
   Select,
-  useToast
+  Grid,
+  GridItem,
+  useToast,
+  Divider
 } from '@chakra-ui/react';
+import { useParams } from 'react-router-dom';
+import { Icon } from "@chakra-ui/react";
+import { FaInfoCircle } from "react-icons/fa";
+import { FiClock, FiInfo } from "react-icons/fi";
+
 
 const ProfessionalCard = ({ professional, onBook }) => {
-  const { name, imageSrc, description, skillset, moreInfo, services } = professional;
-  const [isOpen, setIsOpen] = React.useState(false);
+  const { name, imageSrc, description, skillset, moreInfo, services,_id } = professional;
+  const {id} = useParams();
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState(null);
+  const [currentProfessional, setCurrentProfessional] = useState("");
   const toast = useToast();
-  const [formData, setFormData] = React.useState({
+  const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
@@ -32,6 +43,7 @@ const ProfessionalCard = ({ professional, onBook }) => {
     time: '',
     message: '',
     service: '',
+    professional:_id
   });
 
   const handleOpenModal = () => {
@@ -50,35 +62,63 @@ const ProfessionalCard = ({ professional, onBook }) => {
     }));
   };
 
-  const handleSelectService = (selectedService) => {
+  const handleSelectService = (event) => {
+    const selectedServiceId = event.target.value;
+    const selectedService = services.find((service) => service._id === selectedServiceId);
+
     setFormData((prevFormData) => ({
       ...prevFormData,
-      service: selectedService.name,
+      service: selectedServiceId, // Store the selected service's ID in formData
     }));
+    setSelectedService(selectedService); // Update the selectedService state
   };
-
   const getServiceDetails = () => {
-    const selectedService = services.find((service) => service.name === formData.service);
+    const selectedService = services.find((service) => service._id === formData.service);
     if (selectedService) {
       return (
-<Flex mt={4} p={4} borderWidth="1px" borderRadius="md" colorScheme="purple">
-  <Text fontWeight="bold">Price:</Text>
-  <Text>{selectedService.amount}</Text>
-  <Text fontWeight="bold">Duration:</Text>
-  <Text>{selectedService.duration}</Text>
-  {selectedService.moreInfo && (
-    <Text>{selectedService.moreInfo}</Text>
-  )}
-</Flex>
-
+        <Flex
+        mt={4}
+        p={4}
+        borderWidth="1px"
+        borderRadius="md"
+        // boxShadow="md"
+        flexDirection="column"
+        alignItems="center"
+      >
+        <Grid templateColumns="1fr 1fr" gap={4} mb={4} alignItems="center">
+          <GridItem>
+            <Text fontWeight="bold" fontSize="lg" color="purple.500">
+              Price:
+            </Text>
+            <Text fontSize="xl" fontWeight="bold">
+              {selectedService.amount}
+            </Text>
+          </GridItem>
+          <GridItem>
+            <Text fontWeight="bold" fontSize="lg" color="purple.500">
+              Duration:
+            </Text>
+            <Flex alignItems="center">
+              <Box as={FiClock} mr={2} />
+              <Text fontSize="lg">{selectedService.duration}</Text>
+            </Flex>
+          </GridItem>
+        </Grid>
+        {selectedService.moreInfo && (
+          <Flex alignItems="center">
+            <Box as={FiInfo} color="purple.500" mr={2} />
+            <Text fontSize="lg">{selectedService.moreInfo}</Text>
+          </Flex>
+        )}
+      </Flex>
       );
     }
     return null;
   };
-
   const handleBookAppointment = () => {
     // Add your booking logic here
     console.log('Booking appointment:', formData);
+  
     toast({
       title: `Appointment Booked!`,
       status: 'success',
@@ -90,12 +130,12 @@ const ProfessionalCard = ({ professional, onBook }) => {
   return (
     <Box borderWidth="1px" borderRadius="10px" p={4} maxW="sm">
       <Box>
-        <Image src="../images/female-hairdresser-making-hairstyle-redhead-woman-beauty-salon.jpg" borderRadius="10px" alt={name} objectFit="cover"/>
+        <Image src="https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg" borderRadius="10px" alt={name} objectFit="cover"/>
       </Box>
       <Text mt={2} fontWeight="bold" fontSize="lg">
         {name}
       </Text>
-      <Text mt={2} fontSize="sm">
+      <Text mt={2} fontSize="sm" noOfLines={1}>
         {description}
       </Text>
       <Text mt={2} fontWeight="bold" fontSize="md">
@@ -111,14 +151,16 @@ const ProfessionalCard = ({ professional, onBook }) => {
       <Text noOfLines={1} mt={2} fontSize="sm">
         {moreInfo}
       </Text>
-      <Button mt={4} onClick={handleOpenModal} colorScheme="purple" size="sm">
+      <Button mt={4} onClick={handleOpenModal} colorScheme="purple" size="md">
         Book Appointment
       </Button>
 
       <Modal isOpen={isOpen} onClose={handleCloseModal} size="4xl">
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Book Appointment</ModalHeader>
+          <ModalHeader>Book Appointment of {name}</ModalHeader>
+          {/* <Text>Please fill this form</Text> */}
+          <Divider/>
           <ModalBody>
             <Box display="grid" gridTemplateColumns="1fr 1fr" gridGap={4}>
               <FormControl>
@@ -147,20 +189,27 @@ const ProfessionalCard = ({ professional, onBook }) => {
               </FormControl>
               <FormControl gridColumn="1 / span 2">
                 <FormLabel>Service</FormLabel>
-                <Select name="service" value={formData.service} onChange={handleInputChange}>
+                <Select
+                  name="service"
+                  value={formData.service} // Use the formData's service property directly
+                  onChange={handleSelectService}
+                >
                   <option value="">Select a service</option>
                   {services.map((service) => (
-                    <option key={service.name} value={service.name} onClick={() => handleSelectService(service)}>
+                    <option key={service._id} value={service._id}>
                       {service.name}
                     </option>
                   ))}
                 </Select>
+
+            {getServiceDetails()}
+          {/* <Divider/> */}
               </FormControl>
             </Box>
-            {getServiceDetails()}
           </ModalBody>
+          <Divider/>
           <ModalFooter>
-            <Button colorScheme="purple" mr={3} onClick={handleBookAppointment}>
+            <Button colorScheme="purple" mr={3}  onClick={handleBookAppointment}>
               Book
             </Button>
             <Button variant="ghost" onClick={handleCloseModal}>

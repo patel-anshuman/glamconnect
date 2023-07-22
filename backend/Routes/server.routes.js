@@ -35,7 +35,8 @@ Router.get("/professionals", async (req, res) => {
 Router.get("/professionals/:category", async (req, res) => {
     const category = req.params.category;
     try {
-        const professionals = await Professional.find({ category });
+        const professionals = await Professional.find({ category }).populate("services")
+            .populate("category");
         res.json(professionals);
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -281,4 +282,8 @@ Router.post("/service", async (req, res) => {
             .json({ message: "An error occurred while post the service." });
     }
 });
+Router.post("/add", async (req, res) => {
+    const data = await Professional.insertMany(req.body);
+    res.send(data)
+})
 module.exports = Router;

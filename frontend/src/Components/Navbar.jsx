@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiLogOut } from "react-icons/fi";
 import { MdAccountCircle } from "react-icons/md";
@@ -19,13 +19,17 @@ import { HamburgerIcon, CloseIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { useToast } from "@chakra-ui/react";
 import Cookies from "js-cookie";
 import { Link } from "react-router-dom";
+import Context, { myContext } from "../contextAPI/Context";
 
 const Navbar = ({ baseServerURL }) => {
   const { isOpen, onToggle } = useDisclosure();
+  const {login,userLogin,userLogout} = useContext(myContext);
   const [user, setUser] = useState(null);
   const toast = useToast();
   const navigate = useNavigate();
-
+  // console.log({login})
+  // console.log(useContext(Context))
+// console.log(user)
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
@@ -84,7 +88,8 @@ const Navbar = ({ baseServerURL }) => {
           isClosable: true,
         });
         Cookies.remove("token");    // Clear the authentication token from cookies
-        setUser(null);    // Reset the user state to null
+        setUser(null); 
+        userLogout();   // Reset the user state to null
         navigate("/");    // Refresh home page
       } else {
         // If the logout request fails, show an error toast
@@ -173,7 +178,7 @@ const Navbar = ({ baseServerURL }) => {
       </Box>
 
       {/* User Dropdown */}
-      {user ? (
+      {login ? (
         // If the user is logged in, show the user dropdown
         <Box display="flex" alignItems="center" border="md" gap="5px" color="grey.600">
           <Menu>

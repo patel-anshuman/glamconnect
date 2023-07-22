@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { Box, Flex, Text, Link } from '@chakra-ui/react';
 import { createContext } from 'react';
 
+export const myContext = createContext();
 const Context = ({children}) => {
 
-    const myContext = createContext();
     let [login,setLogin] = useState(false);
 
     let userLogin = () => {
@@ -21,3 +21,4 @@ const Context = ({children}) => {
 };
 
 export default Context;
+

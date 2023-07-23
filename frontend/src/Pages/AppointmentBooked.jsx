@@ -29,9 +29,9 @@ const AppointmentBooked = ({baseServerURL}) => {
   const [appointments, setAppointments] = useState([]);
   const token = Cookies.get('token');
   useEffect(() => {
-    console.log(baseServerURL)
+    // console.log(baseServerURL)
     const fetchData = () => {
-        axios.get(`http://localhost:8080/api/appointment/booked`, {
+        axios.get(`${baseServerURL}/api/appointment/booked`, {
             headers: {
               'Content-Type': 'application/json',
               Authorization: `booked ${token}`,
@@ -59,7 +59,7 @@ const AppointmentBooked = ({baseServerURL}) => {
         order_id: data.id,
         handler: async (response) => {
             try {
-                const verifyUrl = "http://localhost:8080/payment/verify";
+                const verifyUrl = `${baseServerURL}/payment/verify`;
                 const { data } = await axios.post(verifyUrl, response);
                 console.log(data);
             } catch (error) {
@@ -76,7 +76,7 @@ const AppointmentBooked = ({baseServerURL}) => {
 
 const handlePayment = async (price,id) => {
     try {
-        const orderUrl = "http://localhost:8080/orders";
+        const orderUrl = `${baseServerURL}/orders`;
         const { data } = await axios.post(orderUrl, { amount: price,appointmentID: id  });
         console.log(data);
         initPayment(data.data);
@@ -152,7 +152,7 @@ const handlePayment = async (price,id) => {
               {isUpcomingAppointment(appointment)  && !appointment.service.paid && (
                 <Flex mt="4" alignItems="center">
                   <Text fontWeight="bold" fontSize="md">
-                    Amount: ${appointment.service.amount_numeric}
+                    Amount: ₹{appointment.service.amount_numeric}
                   </Text>
                   <Stack direction="row" ml="4">
                     <Tooltip label="Pay Online">

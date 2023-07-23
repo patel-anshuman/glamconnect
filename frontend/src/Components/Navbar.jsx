@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { FiLogOut } from "react-icons/fi";
 import { MdAccountCircle } from "react-icons/md";
 import { GrSchedules } from "react-icons/gr";
 import {
@@ -17,19 +16,20 @@ import {
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { useToast } from "@chakra-ui/react";
+import { FiLogOut, FiSettings } from "react-icons/fi";
 import Cookies from "js-cookie";
 import { Link } from "react-router-dom";
 import Context, { myContext } from "../contextAPI/Context";
 
 const Navbar = ({ baseServerURL }) => {
   const { isOpen, onToggle } = useDisclosure();
-  const {login,userLogin,userLogout} = useContext(myContext);
+  const { login, userLogin, userLogout } = useContext(myContext);
   const [user, setUser] = useState({});
   const toast = useToast();
   const navigate = useNavigate();
   // console.log({login})
   // console.log(useContext(Context))
-// console.log(user)
+  // console.log(user)
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
@@ -68,18 +68,18 @@ const Navbar = ({ baseServerURL }) => {
         console.error("Authentication token not found.");
         return;
       }
-      
+
       // Make an API call to the backend route /user/logout with the bearer token in the headers
       const response = await fetch(`${baseServerURL}/user/logout`, {
         method: "GET",
         headers: {
-          Authorization: `navbar ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
       if (response.ok) {
         // If the logout request is successful, show a success toast
-        console.log("Logout button clicked")
+        // console.log("Logout button clicked")
         toast({
           title: "Logout Successful",
           description: "You have been logged out.",
@@ -118,9 +118,9 @@ const Navbar = ({ baseServerURL }) => {
     >
       {/* Logo */}
       <Link to="/">
-      <Text as="a"  fontWeight="bold" fontSize="2xl" color="white">
-        GlamConnect
-      </Text>
+        <Text as="a" fontWeight="bold" fontSize="2xl" color="white">
+          GlamConnect
+        </Text>
       </Link>
       {/* Hamburger Menu */}
       <IconButton
@@ -184,29 +184,39 @@ const Navbar = ({ baseServerURL }) => {
 
       {/* User Dropdown */}
       {login ? (
-        // If the user is logged in, show the user dropdown
+        // If the user is logged in
         <Box display="flex" alignItems="center" border="md" gap="5px" color="grey.600">
           <Menu>
             <MenuButton as={Button} rightIcon={<ChevronDownIcon />} bg="white">
               {user.name}
             </MenuButton>
             <MenuList>
-              <MenuItem fontWeight="500" borderWidth="1px" display={"flex"} borderTop="none" borderLeft="none" borderRight="none" gap={"10px"}
-              >
+              {/* Common menu items for both user and admin */}
+              <MenuItem fontWeight="500" borderWidth="1px" display={"flex"} borderTop="none" borderLeft="none" borderRight="none" gap={"10px"}>
                 <MdAccountCircle fontSize={"23px"} />
                 My Account
               </MenuItem>
-              <MenuItem fontWeight="500" borderWidth="1px" borderTop="none" display={"flex"} borderLeft="none" borderRight="none" gap={"10px"}
-              onClick={()=>navigate("/booked/appointments")}
-              >
-                <GrSchedules fontSize={"23px"} />
-                Appointments
-              </MenuItem>
-              <MenuItem fontWeight="500" borderWidth="1px" borderTop="none" display={"flex"} borderLeft="none" borderRight="none" borderBottom="none" gap={"10px"} onClick={handleLogout}
-              >
+
+              {/* Role-specific menu items */}
+              {user.role === "user" && (
+                <MenuItem fontWeight="500" borderWidth="1px" borderTop="none" display={"flex"} borderLeft="none" borderRight="none" gap={"10px"} onClick={() => navigate("/booked/appointments")}>
+                  <GrSchedules fontSize={"23px"} />
+                  Appointments
+                </MenuItem>
+              )}
+
+              {user.role === "admin" && (
+                <MenuItem fontWeight="500" borderWidth="1px" borderTop="none" display={"flex"} borderLeft="none" borderRight="none" gap={"10px"} onClick={() => navigate("/admin")}>
+                  <FiSettings fontSize={"23px"} />
+                  Admin Dashboard
+                </MenuItem>
+              )}
+
+              <MenuItem fontWeight="500" borderWidth="1px" borderTop="none" display={"flex"} borderLeft="none" borderRight="none" borderBottom="none" gap={"10px"} onClick={handleLogout}>
                 <FiLogOut fontSize={"23px"} />
                 Logout
               </MenuItem>
+
             </MenuList>
           </Menu>
         </Box>
@@ -218,6 +228,7 @@ const Navbar = ({ baseServerURL }) => {
           </Button>
         </Link>
       )}
+
     </Flex>
   );
 };

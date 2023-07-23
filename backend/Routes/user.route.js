@@ -201,6 +201,7 @@ userRouter.post('/data', auth, async (req, res) => {
       name: user.name,
       email: user.email,
       phoneNumber: user.phoneNumber,
+      role: user.role
     };
 
     // Return the user data in the response

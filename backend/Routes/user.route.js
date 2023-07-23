@@ -2,8 +2,11 @@ const express = require("express");
 const nodemailer = require("nodemailer");
 const randomstring = require("randomstring");
 const UserModel = require("../Model/user.model");
+const Professional = require('../Model/professional.model');
 const { auth } = require("../Middlewares/auth.middleware");
+// const { roleAuth } = require("../Middlewares/role.auth.middleware");
 const BlackListModel = require("../Model/blacklist.model");
+
 require("dotenv").config();
 
 const userRouter = express.Router();
@@ -421,5 +424,7 @@ userRouter.post("/sendlink", async (req, res) => {
     }
   } catch (error) { }
 });
+
+
 
 module.exports = userRouter;

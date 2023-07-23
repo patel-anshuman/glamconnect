@@ -19,7 +19,7 @@ const BeautyCategoriesPage = ({baseServerURL}) => {
     useEffect(()=>{
       const fetchCategories = async () => {
         try {
-          const response = await fetch(`http://localhost:8080/categories`);
+          const response = await fetch(`${baseServerURL}/categories`);
           const data = await response.json();
           setCategory(data);
         } catch (error) {

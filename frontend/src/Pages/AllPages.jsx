@@ -7,7 +7,8 @@ import ProfessionalsPage from './Professionals'
 import Signup from './Signup'
 import Login from './Login'
 import Appointment from './Appointment'
-
+import AppointmentBooked from './AppointmentBooked'
+import RazorPayy from './razorpay'
 const AllPages = ({baseServerURL}) => {
   return (
     <Routes>
@@ -19,6 +20,8 @@ const AllPages = ({baseServerURL}) => {
         <Route path="/signup" element={<Signup baseServerURL={baseServerURL}/>}/>
         <Route path='/categories/professionals/:id' element={<ProfessionalsPage baseServerURL={baseServerURL}/>}/>
         <Route path='/appointment/:id' element={<Appointment baseServerURL={baseServerURL}/>}/>
+        <Route path='/booked/appointments' element={<AppointmentBooked/>} baseServerURL={baseServerURL}/>
+        <Route path='/razor' element={<RazorPayy/>}></Route>
         <Route path='*' element={<h1>Page Not Found</h1>}/>
     </Routes>
   )

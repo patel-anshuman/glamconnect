@@ -117,10 +117,11 @@ const Navbar = ({ baseServerURL }) => {
     //   color="white"
     >
       {/* Logo */}
-      <Text as="a" href="/" fontWeight="bold" fontSize="2xl" color="white">
+      <Link to="/">
+      <Text as="a"  fontWeight="bold" fontSize="2xl" color="white">
         GlamConnect
       </Text>
-
+      </Link>
       {/* Hamburger Menu */}
       <IconButton
         display={{ base: "flex", md: "none" }}
@@ -151,8 +152,9 @@ const Navbar = ({ baseServerURL }) => {
         >
           <Link
             as="a"
-            href="#"
+            // href="#"
             px={2}
+            to="/"
             py={1}
             _hover={{ textDecoration: "underline" }}
           >
@@ -195,6 +197,7 @@ const Navbar = ({ baseServerURL }) => {
                 My Account
               </MenuItem>
               <MenuItem fontWeight="500" borderWidth="1px" borderTop="none" display={"flex"} borderLeft="none" borderRight="none" gap={"10px"}
+              onClick={()=>navigate("/booked/appointments")}
               >
                 <GrSchedules fontSize={"23px"} />
                 Appointments

@@ -61,7 +61,7 @@ const {userLogin} =useContext(myContext)
 
           // Save the token in cookies
           Cookies.set('token', data.token, { expires: 7 }); // Set the cookie to expire in 7 days
-            userLogin();
+          userLogin();
           toast({
             title: 'Login Successful',
             description: 'You have successfully logged in.',
@@ -70,8 +70,11 @@ const {userLogin} =useContext(myContext)
             isClosable: true,
           });
 
-          // Navigate to home page
-          navigate('/');
+          if (data.role === 'user') {
+            navigate('/'); // Navigate to the home page for regular users
+          } else if (data.role === 'admin') {
+            navigate('/admin'); // Navigate to the admin page for admin users
+          }
         } else {
           // Login failed
           throw new Error('Invalid email or password. Please try again.');

@@ -13,7 +13,7 @@ const Appointment = ({baseServerURL}) => {
     const fetchAppointment = async () => {
       try {
         // Replace this URL with your actual API endpoint
-        const response = await fetch(`http://localhost:8080/appointment/${id}`);
+        const response = await fetch(`${baseServerURL}/appointment/${id}`);
         const data = await response.json();
         setAppointment(data);
          console.log(data) 
@@ -26,7 +26,7 @@ const Appointment = ({baseServerURL}) => {
   }, []);
 
   const handleAccept = () => {
-    fetch(`http://localhost:8080/appointment/${id}`,{
+    fetch(`${baseServerURL}/appointment/${id}`,{
       method: 'PUT',
       headers: {
         

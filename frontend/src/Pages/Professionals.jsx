@@ -3,12 +3,12 @@ import { Box, Grid } from '@chakra-ui/react';
 import ProfessionalCard from '../Components/ProfessionalCard';
 import { useEffect ,useState} from 'react';
 import { useParams } from 'react-router-dom';
-const ProfessionalsPage = () => {
+const ProfessionalsPage = ({baseServerURL}) => {
   const [professionals, setProfessional] = useState([])
   const {id} =  useParams();
   useEffect(()=>{
     const fetchProfessional=async()=>{
-      const response = await fetch(`http://localhost:8080/professionals/${id}`);
+      const response = await fetch(`${baseServerURL}/professionals/${id}`);
       const data = await response.json();
       console.log(data);
       setProfessional(data)

@@ -80,7 +80,7 @@ const {userLogin} =useContext(myContext)
         // Error occurred during login
         toast({
           title: 'Login Failed',
-          description: error.message,
+          description: error.msg,
           status: 'error',
           duration: 5000,
           isClosable: true,

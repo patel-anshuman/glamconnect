@@ -24,7 +24,7 @@ import Context, { myContext } from "../contextAPI/Context";
 const Navbar = ({ baseServerURL }) => {
   const { isOpen, onToggle } = useDisclosure();
   const {login,userLogin,userLogout} = useContext(myContext);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({});
   const toast = useToast();
   const navigate = useNavigate();
   // console.log({login})

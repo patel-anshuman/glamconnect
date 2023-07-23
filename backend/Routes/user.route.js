@@ -87,8 +87,6 @@ userRouter.post("/register", async (req, res) => {
       return res.status(409).json({ msg: "User already registered! Please login." });
     }
 
-    const hash = await bcrypt.hash(password, process.env.salt);
-    // Hash the password using bcrypt with 5 rounds of salt
     const salt = +process.env.salt;
     const hash = await bcrypt.hash(password, salt);
 

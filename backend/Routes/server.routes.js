@@ -5,7 +5,7 @@ const Appointment = require("../Model/appointment.model");
 const Professional = require("../Model/professional.model");
 const Service = require("../Model/service.modal");
 const { auth } = require("../Middlewares/auth.middleware");
-
+// const crypto = require('crypto');
 const nodemailer = require("nodemailer");
 const Router = express.Router();
 const transporter = nodemailer.createTransport({
@@ -378,4 +378,55 @@ Router.post("/add", async (req, res) => {
     const data = await Professional.insertMany(req.body);
     res.send(data);
 });
+Router.get("/api/appointment/booked", auth, async (req, res) => {
+    const { userID } = req.body;
+
+    try {
+        const appoint = await Appointment.find({ user: userID }).populate("professional").populate("service");
+        res.json({ appoint })
+    }
+    catch (err) {
+        res.status(404).json({ error: err.message })
+    }
+})
+// const router = require("express").Router();
+const Razorpay = require("razorpay");
+const crypto = require("crypto");
+
+Router.post("/orders", async (req, res) => {
+    const { amount, appointmentID } = req.body;
+    // console.log("order-route", req.body)
+    try {
+        const instance = new Razorpay({
+            key_id: "rzp_test_YKejJgzYAHnIpL",
+            key_secret: "1ZYkw0NnToOoQL5zlzcsl5Vb",
+        });
+        const appointment = await Appointment.findById(appointmentID);
+        const options = {
+            amount: req.body.amount * 100,
+            currency: "INR",
+            receipt: crypto.randomBytes(10).toString("hex"),
+        };
+
+        instance.orders.create(options, async (error, order) => {
+            if (error) {
+                console.log(error);
+                return res.status(500).json({ message: "Something Went Wrong!" });
+            }
+            appointment.orderID = order.id;
+            await appointment.save();
+
+            res.status(200).json({ data: order });
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Internal Server Error!" });
+        console.log(error);
+    }
+});
+
+Router.post('/payment/verify', async (req, res) => {
+
+    res.status(200).json({ message: 'Payment verified successfully' });
+});
+// module.exports = router;
 module.exports = Router;

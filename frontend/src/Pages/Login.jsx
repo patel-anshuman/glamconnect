@@ -11,8 +11,8 @@ import {
   VStack,
   Text,
   Divider,
-  Link,
 } from '@chakra-ui/react';
+import {Link} from "react-router-dom"
 import Context, { myContext } from "../contextAPI/Context";
 const Login = ({baseServerURL}) => {
   const [email, setEmail] = useState('');
@@ -122,7 +122,10 @@ const {userLogin} =useContext(myContext)
 
         <Text>
           Don't have an account?{' '}
-          <Link color="blue.500" href="/signup">
+          <Link style={{
+            color:"blue",
+            fontWeight:"bold",
+          }} to="/signup">
             Sign Up
           </Link>
         </Text>

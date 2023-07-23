@@ -120,7 +120,7 @@ const Signup = ({baseServerURL}) => {
           const errorData = await response.json();
           toast({
             title: 'Signup Failed',
-            description: errorData.message,
+            description: errorData.error,
             status: 'error',
             duration: 5000,
             isClosable: true,

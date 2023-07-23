@@ -88,6 +88,9 @@ userRouter.post("/register", async (req, res) => {
     }
 
     const hash = await bcrypt.hash(password, process.env.salt);
+    // Hash the password using bcrypt with 5 rounds of salt
+    const salt = +process.env.salt;
+    const hash = await bcrypt.hash(password, salt);
 
     const newUser = new UserModel({
       name,
@@ -102,7 +105,7 @@ userRouter.post("/register", async (req, res) => {
 
     if (userData) {
       // You can send the verification email asynchronously, as it might take time.
-      sendVerificationMail(name, phoneNumber, email, userData._id);
+      // sendVerificationMail(name, phoneNumber, email, userData._id);
 
       // Return a success response
       res.status(200).json({ msg: "Registration successful", userData });
@@ -112,7 +115,7 @@ userRouter.post("/register", async (req, res) => {
     }
   } catch (error) {
     // Handle any unexpected errors
-    res.status(500).json({ msg: "Internal Server Error" });
+    res.status(500).json({ msg: "Internal Server Error", "error": error.message });
   }
 });
 

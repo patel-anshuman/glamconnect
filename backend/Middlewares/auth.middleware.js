@@ -4,7 +4,7 @@ const BlacklistModel = require('../Model/blacklist.model');
 
 const auth = async (req, res, next) => {
   let token = req.headers.authorization;
-  console.log(token)
+  // console.log(token)
 
   if (!token) {
     return res.status(401).json({ success: false, msg: "Authorization token missing" });

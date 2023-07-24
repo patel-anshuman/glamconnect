@@ -3,7 +3,7 @@ import AllPages from './Pages/AllPages';
 import Navbar from './Components/Navbar';
 import Footer from './Components/Footer';
 
-const baseServerURL = "http://localhost:8080";
+const baseServerURL = "https://misty-yoke-seal.cyclic.app/";
 
 function App() {
   return (
@@ -11,7 +11,7 @@ function App() {
       <Navbar baseServerURL={baseServerURL} />
       <AllPages baseServerURL={baseServerURL} />
       <Footer />
-      </>
+    </>
   );
 }
 

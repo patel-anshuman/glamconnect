@@ -152,7 +152,7 @@ const Navbar = ({ baseServerURL }) => {
         >
           <Link
             as="a"
-            // href="#"
+            // href="#" 
             px={2}
             to="/"
             py={1}
@@ -185,7 +185,7 @@ const Navbar = ({ baseServerURL }) => {
       {/* User Dropdown */}
       {login ? (
         // If the user is logged in
-        <Box display="flex" alignItems="center" border="md" gap="5px" color="grey.600">
+        <Box display="flex" alignItems="center" border="md" gap="5px" color="black">
           <Menu>
             <MenuButton as={Button} rightIcon={<ChevronDownIcon />} bg="white">
               {user.name}
@@ -223,7 +223,7 @@ const Navbar = ({ baseServerURL }) => {
       ) : (
         // If the user is not logged in, show the "Login" link
         <Link to="/login">
-          <Button colorScheme="white" variant="solid">
+          <Button variant="solid">
             Login
           </Button>
         </Link>

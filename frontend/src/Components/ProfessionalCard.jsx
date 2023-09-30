@@ -28,7 +28,7 @@ import { FaInfoCircle } from "react-icons/fa";
 import { FiClock, FiInfo } from "react-icons/fi";
 import axios from "axios"
 import Cookies from "js-cookie";
-const ProfessionalCard = ({ professional, onBook }) => {
+const ProfessionalCard = ({ professional, onBook,Deplyurl }) => {
   const { name, imageSrc, description, skillset, moreInfo, services,_id } = professional;
   const {id} = useParams();
   const [isOpen, setIsOpen] = useState(false);
@@ -121,7 +121,7 @@ const ProfessionalCard = ({ professional, onBook }) => {
     // const apointmentData = {
 
     // }
-    fetch("http://localhost:8080/appointment", {
+    fetch(`${Deplyurl}/appointment`, {
       method: 'POST',
       headers: {
         'Authorization': `thisistheone ${token}`,

@@ -25,6 +25,7 @@ const ProfessionalsPage = ({baseServerURL}) => {
       <Grid templateColumns="repeat(3, 1fr)" gap={6} placeItems={"center"}>
         {professionals.map((professional) => (
           <ProfessionalCard
+            Deplyurl={baseServerURL}
             key={professional._id}
             professional={professional}
             onBook={() => handleBooking(professional._id)}

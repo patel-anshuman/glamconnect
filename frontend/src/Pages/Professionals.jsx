@@ -1,20 +1,23 @@
-import React from 'react';
-import { Box, Grid } from '@chakra-ui/react';
+import { Box, Grid, Spinner } from '@chakra-ui/react';
 import ProfessionalCard from '../Components/ProfessionalCard';
-import { useEffect ,useState} from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-const ProfessionalsPage = ({baseServerURL}) => {
+const ProfessionalsPage = ({ baseServerURL }) => {
   const [professionals, setProfessional] = useState([])
-  const {id} =  useParams();
-  useEffect(()=>{
-    const fetchProfessional=async()=>{
+  const [isLoading, setIsLoading] = useState(true)
+  const { id } = useParams();
+  useEffect(() => {
+    const fetchProfessional = async () => {
       const response = await fetch(`${baseServerURL}/professionals/${id}`);
       const data = await response.json();
+      if (data) {
+        setIsLoading(false)
+      }
       console.log(data);
       setProfessional(data)
     }
     fetchProfessional();
-  },[])
+  }, [])
   const handleBooking = (professionalId) => {
     // Replace with your booking logic
     console.log('Booking professional with ID:', professionalId);
@@ -22,7 +25,16 @@ const ProfessionalsPage = ({baseServerURL}) => {
 
   return (
     <Box p={4}>
-      <Grid templateColumns="repeat(3, 1fr)" gap={6} placeItems={"center"}>
+      {
+        isLoading &&
+        <Spinner
+          thickness='4px'
+          speed='0.65s'
+          emptyColor='gray.200'
+          color='blue.500'
+          size='xl'
+        />}
+      <Grid templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }} gap={6} placeItems={"center"}>
         {professionals.map((professional) => (
           <ProfessionalCard
             Deplyurl={baseServerURL}
@@ -33,6 +45,7 @@ const ProfessionalsPage = ({baseServerURL}) => {
         ))}
       </Grid>
     </Box>
+
   );
 };
 

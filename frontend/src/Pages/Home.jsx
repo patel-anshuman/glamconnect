@@ -4,15 +4,17 @@ import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { Box, Heading, Text, Flex, Container, Avatar } from '@chakra-ui/react';
 import { FaSearch, FaRegListAlt, FaCheckCircle } from 'react-icons/fa';
 
-const Home = ({baseServerURL}) => {
+const Home = ({ baseServerURL }) => {
 
   useEffect(() => {
     document.title = 'GlamConnect';
   }, []);
-  
+
   return (
     <Box>
       {/* Carousel Section */}
+
+
       <Box height="60vh" position="relative">
         <Carousel showThumbs={false} infiniteLoop autoPlay>
           <div>
@@ -52,7 +54,7 @@ const Home = ({baseServerURL}) => {
             />
           </div>
         </Carousel>
-        <div className="carousel-caption">
+        <div classNameName="carousel-caption">
           <Box
             position="absolute"
             top="50%"
@@ -60,7 +62,7 @@ const Home = ({baseServerURL}) => {
             transform="translate(-50%, -50%)"
             textAlign="center"
           >
-            <Heading as="h1" size="4xl" color="white" marginBottom="20px" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',  }}>
+            <Heading as="h1" size="4xl" color="white" marginBottom="20px" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)', }}>
               GlamConnect
             </Heading>
             <Text color="white" fontSize="2xl" style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.5)' }}>

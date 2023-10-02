@@ -3,7 +3,7 @@ import AllPages from './Pages/AllPages';
 import Navbar from './Components/Navbar';
 import Footer from './Components/Footer';
 
-const baseServerURL = "https://outstanding-sombrero-tuna.cyclic.cloud/";
+const baseServerURL = "https://kind-lime-cygnet-hem.cyclic.cloud";
 
 function App() {
   return (

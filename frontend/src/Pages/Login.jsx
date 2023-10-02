@@ -12,9 +12,9 @@ import {
   Text,
   Divider,
 } from '@chakra-ui/react';
-import {Link} from "react-router-dom"
+import { Link } from "react-router-dom"
 import Context, { myContext } from "../contextAPI/Context";
-const Login = ({baseServerURL}) => {
+const Login = ({ baseServerURL }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -23,7 +23,7 @@ const Login = ({baseServerURL}) => {
 
   const navigate = useNavigate();
   const toast = useToast();
-const {userLogin} =useContext(myContext)
+  const { userLogin } = useContext(myContext)
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -126,10 +126,19 @@ const {userLogin} =useContext(myContext)
         <Text>
           Don't have an account?{' '}
           <Link style={{
-            color:"blue",
-            fontWeight:"bold",
+            color: "blue",
+            fontWeight: "bold",
           }} to="/signup">
             Sign Up
+          </Link>
+        </Text>
+        <Text>
+          Forgot Password?{' '}
+          <Link style={{
+            color: "blue",
+            fontWeight: "bold",
+          }} to="/forgot-password">
+            Reset Password
           </Link>
         </Text>
       </VStack>

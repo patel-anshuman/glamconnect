@@ -14,7 +14,6 @@ GlamConnect is an appointment booking application designed to connect users with
    3. [ProfessionalPage](#professionalpage)
    4. [AppointmentPage](#appointmentpage)
 6. [Contributing](#contributing)
-7. [License](#license)
 
 ## Introduction
 
@@ -45,7 +44,7 @@ GlamConnect is a platform where users can sign up or log in to book appointments
 
 ## Usage
 
-1. **Visit the [GlamConnect App](insert_deployed_link_here)**.
+1. **Visit the [GlamConnect App](https://glamconnect.vercel.app/)**.
 2. Sign up or log in to the GlamConnect app.
 3. Browse beauty professionals based on categories.
 4. Select a professional, choose appointment details, and desired services.

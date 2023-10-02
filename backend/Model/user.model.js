@@ -7,6 +7,8 @@ const userSchema = mongoose.Schema({
   password: { type: String, required: true },
   isVerified: { type: Boolean, default: false },
   // isAdmin:{type:Boolean, default:true},
+  resetToken: String,
+  resetTokenExpiration: Date,
   role: { type: String, default: "user", enum: ["admin", "user"] },
   appointments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Appointment" }],
 });

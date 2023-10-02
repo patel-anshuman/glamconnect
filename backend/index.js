@@ -8,7 +8,7 @@ const userRoute = require("./Routes/user.route"); // Import user routes
 const adminRoute = require("./Routes/admin.route");
 const MaiLRouter = require('./Routes/sendingemail.route'); // Import email sending routes
 
-const {auth} = require('./Middlewares/auth.middleware');
+const { auth } = require('./Middlewares/auth.middleware');
 
 const app = express(); // Create an Express app
 
@@ -18,8 +18,8 @@ app.use(express.json()); // Enable JSON parsing for request bodies
 app.use("/", MaiLRouter); // Use email sending routes for the root path
 app.use("/user", userRoute); // Use user routes for the "/user" path
 app.use("/", Router); // Use server routes for the root path
-app.use("/admin",adminRoute);   // Use admin routes for the "/admin" path
+app.use("/admin", adminRoute);   // Use admin routes for the "/admin" path
 
 // Import database connection configuration
 const Connection = require('./Configs/db');
-app.listen(process.env.port, Connection()); // Start the server and listen on port, establishing a database connection
+app.listen(8080, Connection()); // Start the server and listen on port, establishing a database connection
